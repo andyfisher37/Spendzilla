@@ -9,7 +9,7 @@ class TransactionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 310,
+      height: 350,
       child: transactions.isEmpty
           ? Column(
               children: <Widget>[
@@ -31,37 +31,23 @@ class TransactionList extends StatelessWidget {
           : ListView.builder(
               itemBuilder: (ctx, index) {
                 return Card(
-                  color: Color.fromARGB(255, 252, 251, 250),
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                          color: Theme.of(context).primaryColor,
-                        )),
-                        child: Text(
-                            '${transactions[index].amount.toStringAsFixed(2)} руб.',
-                            style: TextStyle(fontSize: 20)),
+                  elevation: 5,
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: FittedBox(
+                            child: Text('${transactions[index].amount} руб.')),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            transactions[index].title,
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            DateFormat('yyyy-MM-dd hh:mm')
-                                .format(transactions[index].date),
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
+                    title: Text(
+                      transactions[index].title,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    subtitle: Text(
+                        DateFormat.yMMMMd().format(transactions[index].date)),
                   ),
                 );
               },
