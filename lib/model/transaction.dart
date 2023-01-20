@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class Transaction {
-  final String id;
+  final UniqueKey id;
   final String title;
   final double amount;
   final DateTime date;

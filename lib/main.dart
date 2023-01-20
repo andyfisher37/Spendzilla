@@ -39,12 +39,13 @@ class _MyHomePageState extends State<MyHomePage> {
         .toList();
   }
 
-  void _addNewTransaction(String txTitle, double txAmount) {
+  void _addNewTransaction(
+      String txTitle, double txAmount, DateTime choosenDate) {
     final newTx = Transaction(
       title: txTitle,
       amount: txAmount,
-      date: DateTime.now(),
-      id: DateTime.now().toString(),
+      date: choosenDate,
+      id: UniqueKey(),
     );
 
     setState(() {
@@ -52,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void startAddNewTransaction(BuildContext ctx) {
+  void _startAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
       context: ctx,
       builder: (_) {
@@ -65,6 +66,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _deleteTransaction(UniqueKey id) {
+    setState(() {
+      _userTransactions.removeWhere((tx) => tx.id == id);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text('Spendzilla!'),
         actions: [
           IconButton(
-              onPressed: () => startAddNewTransaction(context),
+              onPressed: () => _startAddNewTransaction(context),
               icon: Icon(Icons.add))
         ],
       ),
@@ -82,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Chart(_recentTransactions),
-            TransactionList(_userTransactions),
+            TransactionList(_userTransactions, _deleteTransaction),
           ],
         ),
       ),
@@ -91,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
         padding: const EdgeInsets.all(8.0),
         child: FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: () => startAddNewTransaction(context),
+          onPressed: () => _startAddNewTransaction(context),
         ),
       ),
     );
