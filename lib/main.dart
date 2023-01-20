@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import './widgets/transaction_list.dart';
 import './widgets/new_transaction.dart';
 import './model/transaction.dart';
@@ -80,6 +83,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
     final appBar = AppBar(
       title: Text('Spendzilla!'),
       actions: [
@@ -89,52 +94,68 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
     );
 
+    final txListWidget = Container(
+      height: (mediaQuery.size.height -
+              appBar.preferredSize.height -
+              mediaQuery.padding.top) *
+          0.7,
+      child: TransactionList(_userTransactions, _deleteTransaction),
+    );
+
     return Scaffold(
       appBar: appBar,
-      body: SingleChildScrollView(
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Показать диаграмму'),
-                Switch(
-                    value: _showChart,
-                    onChanged: ((val) {
-                      setState(() {
-                        _showChart = val;
-                      });
-                    }))
-              ],
-            ),
-            _showChart
-                ? Container(
-                    height: (MediaQuery.of(context).size.height -
-                            appBar.preferredSize.height -
-                            MediaQuery.of(context).padding.top) *
-                        0.7,
-                    child: Chart(_recentTransactions),
-                  )
-                : Container(
-                    height: (MediaQuery.of(context).size.height -
-                            appBar.preferredSize.height -
-                            MediaQuery.of(context).padding.top) *
-                        0.7,
-                    child:
-                        TransactionList(_userTransactions, _deleteTransaction),
-                  ),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              if (isLandscape)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Показать диаграмму'),
+                    Switch.adaptive(
+                        value: _showChart,
+                        onChanged: ((val) {
+                          setState(() {
+                            _showChart = val;
+                          });
+                        }))
+                  ],
+                ),
+              if (!isLandscape)
+                Container(
+                  height: (mediaQuery.size.height -
+                          appBar.preferredSize.height -
+                          mediaQuery.padding.top) *
+                      0.3,
+                  child: Chart(_recentTransactions),
+                ),
+              if (!isLandscape) txListWidget,
+              if (isLandscape)
+                _showChart
+                    ? Container(
+                        height: (mediaQuery.size.height -
+                                appBar.preferredSize.height -
+                                mediaQuery.padding.top) *
+                            0.7,
+                        child: Chart(_recentTransactions),
+                      )
+                    : txListWidget
+            ],
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () => _startAddNewTransaction(context),
-        ),
+        child: Platform.isIOS
+            ? Container()
+            : FloatingActionButton(
+                child: Icon(Icons.add),
+                onPressed: () => _startAddNewTransaction(context),
+              ),
       ),
     );
   }
