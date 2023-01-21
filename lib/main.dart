@@ -1,10 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+
 import './widgets/transaction_list.dart';
 import './widgets/new_transaction.dart';
 import './model/transaction.dart';
 import './widgets/chart.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations(
+  //     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -29,9 +37,9 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+  bool _showChart = false;
   final List<Transaction> _userTransactions = [];
-
   List<Transaction> get _recentTransactions {
     return _userTransactions
         .where(
@@ -39,12 +47,30 @@ class _MyHomePageState extends State<MyHomePage> {
         .toList();
   }
 
-  void _addNewTransaction(String txTitle, double txAmount) {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print(state);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void _addNewTransaction(
+      String txTitle, double txAmount, DateTime choosenDate) {
     final newTx = Transaction(
       title: txTitle,
       amount: txAmount,
-      date: DateTime.now(),
-      id: DateTime.now().toString(),
+      date: choosenDate,
+      id: UniqueKey(),
     );
 
     setState(() {
@@ -52,10 +78,10 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void startAddNewTransaction(BuildContext ctx) {
+  void _startAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
       context: ctx,
-      builder: (_) {
+      builder: (context) {
         return GestureDetector(
           child: NewTransaction(_addNewTransaction),
           onTap: () {},
@@ -65,34 +91,99 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Spendzilla!'),
-        actions: [
-          IconButton(
-              onPressed: () => startAddNewTransaction(context),
-              icon: Icon(Icons.add))
+  void _deleteTransaction(UniqueKey id) {
+    setState(() {
+      _userTransactions.removeWhere((tx) => tx.id == id);
+    });
+  }
+
+  List<Widget> _buildLandscapeContent(
+      MediaQueryData mq, AppBar appBar, Widget txListWidget) {
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('Показать диаграмму'),
+          Switch.adaptive(
+              value: _showChart,
+              onChanged: ((val) {
+                setState(() {
+                  _showChart = val;
+                });
+              }))
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Chart(_recentTransactions),
-            TransactionList(_userTransactions),
-          ],
+      _showChart
+          ? Container(
+              height: (mq.size.height -
+                      appBar.preferredSize.height -
+                      mq.padding.top) *
+                  0.7,
+              child: Chart(_recentTransactions),
+            )
+          : txListWidget
+    ];
+  }
+
+  List<Widget> _buildPortraitContent(
+      MediaQueryData mq, AppBar appBar, Widget txListWidget) {
+    return [
+      Container(
+        height:
+            (mq.size.height - appBar.preferredSize.height - mq.padding.top) *
+                0.3,
+        child: Chart(_recentTransactions),
+      ),
+      txListWidget
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print('build() MyHomePage');
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+    final appBar = AppBar(
+      title: Text('Spendzilla!'),
+      actions: [
+        IconButton(
+            onPressed: () => _startAddNewTransaction(context),
+            icon: Icon(Icons.add))
+      ],
+    );
+    final txListWidget = Container(
+      height: (mediaQuery.size.height -
+              appBar.preferredSize.height -
+              mediaQuery.padding.top) *
+          0.7,
+      child: TransactionList(_userTransactions, _deleteTransaction),
+    );
+
+    return Scaffold(
+      appBar: appBar,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              if (isLandscape)
+                ..._buildLandscapeContent(mediaQuery, appBar, txListWidget),
+              if (!isLandscape)
+                ..._buildPortraitContent(mediaQuery, appBar, txListWidget),
+            ],
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () => startAddNewTransaction(context),
-        ),
+        child: Platform.isIOS
+            ? Container()
+            : FloatingActionButton(
+                child: const Icon(Icons.add),
+                onPressed: () => _startAddNewTransaction(context),
+              ),
       ),
     );
   }
