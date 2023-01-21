@@ -4,16 +4,43 @@ import 'package:intl/intl.dart';
 class NewTransaction extends StatefulWidget {
   final Function addTx;
 
-  NewTransaction(this.addTx);
+  NewTransaction(this.addTx) {
+    print('Constructor NewTransaction Widget');
+  }
 
   @override
-  State<NewTransaction> createState() => _NewTransactionState();
+  State<NewTransaction> createState() {
+    print('createSate NewTransaction Widget');
+    return _NewTransactionState();
+  }
 }
 
 class _NewTransactionState extends State<NewTransaction> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
   DateTime _selectedDate;
+
+  NewTransaction() {
+    print('Constructor NewTransaction State');
+  }
+
+  @override
+  void initState() {
+    print('initState()');
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant Widget oldWidget) {
+    print('didUpdateWidget()');
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    print('dispose()');
+    super.dispose();
+  }
 
   void _submitData() {
     if (_amountController.text.isEmpty) {
@@ -53,6 +80,7 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
+    print('build() NewTransaction');
     return SingleChildScrollView(
       child: Card(
         child: Container(
@@ -88,7 +116,7 @@ class _NewTransactionState extends State<NewTransaction> {
                       ),
                     ),
                     OutlinedButton(
-                      child: Text(
+                      child: const Text(
                         'Выберите дату',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -101,7 +129,7 @@ class _NewTransactionState extends State<NewTransaction> {
               ),
               OutlinedButton(
                 onPressed: _submitData,
-                child: Text('Добавить'),
+                child: const Text('Добавить'),
               ),
             ],
           ),
