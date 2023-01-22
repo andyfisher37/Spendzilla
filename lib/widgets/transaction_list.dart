@@ -6,12 +6,12 @@ import './transaction_item.dart';
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
   final Function deleteTx;
+  final Function editTx;
 
-  TransactionList(this.transactions, this.deleteTx);
+  TransactionList(this.transactions, this.deleteTx, this.editTx);
 
   @override
   Widget build(BuildContext context) {
-    print('build() TransactionList');
     return transactions.isEmpty
         ? LayoutBuilder(builder: (ctx, constraints) {
             return Column(
@@ -38,6 +38,7 @@ class TransactionList extends StatelessWidget {
                       key: ValueKey(tx.id),
                       transaction: tx,
                       deleteTx: deleteTx,
+                      editTx: editTx,
                     ))
                 .toList(),
           );

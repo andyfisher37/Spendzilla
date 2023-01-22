@@ -8,9 +8,6 @@ import './model/transaction.dart';
 import './widgets/chart.dart';
 
 void main() {
-  // WidgetsFlutterBinding.ensureInitialized();
-  // SystemChrome.setPreferredOrientations(
-  //     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(MyApp());
 }
 
@@ -54,9 +51,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    print(state);
-  }
+  void didChangeAppLifecycleState(AppLifecycleState state) {}
 
   @override
   void dispose() {
@@ -94,6 +89,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   void _deleteTransaction(UniqueKey id) {
     setState(() {
       _userTransactions.removeWhere((tx) => tx.id == id);
+    });
+  }
+
+  void _editTransaction(UniqueKey id) {
+    setState(() {
+      //_userTransactions.removeWhere((tx) => tx.id == id);
     });
   }
 
@@ -140,7 +141,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    print('build() MyHomePage');
     final mediaQuery = MediaQuery.of(context);
     final isLandscape = mediaQuery.orientation == Orientation.landscape;
     final appBar = AppBar(
@@ -156,7 +156,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               appBar.preferredSize.height -
               mediaQuery.padding.top) *
           0.7,
-      child: TransactionList(_userTransactions, _deleteTransaction),
+      child: TransactionList(
+          _userTransactions, _deleteTransaction, _editTransaction),
     );
 
     return Scaffold(

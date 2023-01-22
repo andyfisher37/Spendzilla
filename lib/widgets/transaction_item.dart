@@ -10,10 +10,12 @@ class TransactionItem extends StatefulWidget {
     Key key,
     @required this.transaction,
     @required this.deleteTx,
+    @required this.editTx,
   }) : super(key: key);
 
   final Transaction transaction;
   final Function deleteTx;
+  final Function editTx;
 
   @override
   State<TransactionItem> createState() => _TransactionItemState();
@@ -25,10 +27,10 @@ class _TransactionItemState extends State<TransactionItem> {
   @override
   void initState() {
     const availableColors = [
-      Colors.red,
-      Colors.black,
-      Colors.blue,
-      Colors.purple
+      Color.fromARGB(255, 112, 160, 244),
+      Color.fromARGB(255, 20, 88, 119),
+      Color.fromARGB(255, 112, 141, 165),
+      Color.fromARGB(255, 0, 170, 255),
     ];
     _bgColor = availableColors[Random().nextInt(4)];
     super.initState();
@@ -53,10 +55,19 @@ class _TransactionItemState extends State<TransactionItem> {
           style: Theme.of(context).textTheme.titleSmall,
         ),
         subtitle: Text(DateFormat.yMMMMd().format(widget.transaction.date)),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete),
-          color: Theme.of(context).errorColor,
-          onPressed: () => widget.deleteTx(widget.transaction.id),
+        trailing: Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.edit),
+              color: Theme.of(context).focusColor,
+              onPressed: () => widget.editTx(widget.transaction.id),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete),
+              color: Theme.of(context).errorColor,
+              onPressed: () => widget.deleteTx(widget.transaction.id),
+            ),
+          ],
         ),
       ),
     );

@@ -4,15 +4,10 @@ import 'package:intl/intl.dart';
 class NewTransaction extends StatefulWidget {
   final Function addTx;
 
-  NewTransaction(this.addTx) {
-    print('Constructor NewTransaction Widget');
-  }
+  NewTransaction(this.addTx);
 
   @override
-  State<NewTransaction> createState() {
-    print('createSate NewTransaction Widget');
-    return _NewTransactionState();
-  }
+  State<NewTransaction> createState() => _NewTransactionState();
 }
 
 class _NewTransactionState extends State<NewTransaction> {
@@ -20,25 +15,18 @@ class _NewTransactionState extends State<NewTransaction> {
   final _amountController = TextEditingController();
   DateTime _selectedDate;
 
-  NewTransaction() {
-    print('Constructor NewTransaction State');
-  }
-
   @override
   void initState() {
-    print('initState()');
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant Widget oldWidget) {
-    print('didUpdateWidget()');
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   void dispose() {
-    print('dispose()');
     super.dispose();
   }
 
@@ -80,7 +68,6 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    print('build() NewTransaction');
     return SingleChildScrollView(
       child: Card(
         child: Container(
