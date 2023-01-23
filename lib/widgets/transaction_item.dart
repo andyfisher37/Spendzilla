@@ -10,12 +10,12 @@ class TransactionItem extends StatefulWidget {
     Key key,
     @required this.transaction,
     @required this.deleteTx,
-    @required this.editTx,
+    //@required this.editTx,
   }) : super(key: key);
 
   final Transaction transaction;
   final Function deleteTx;
-  final Function editTx;
+  //final Function editTx;
 
   @override
   State<TransactionItem> createState() => _TransactionItemState();
@@ -58,10 +58,10 @@ class _TransactionItemState extends State<TransactionItem> {
         trailing: Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.edit),
-              color: Theme.of(context).focusColor,
-              onPressed: () => widget.editTx(widget.transaction.id),
-            ),
+                icon: const Icon(Icons.edit),
+                color: Theme.of(context).focusColor,
+                onPressed: () => {} //widget.editTx(widget.transaction.id),
+                ),
             IconButton(
               icon: const Icon(Icons.delete),
               color: Theme.of(context).errorColor,

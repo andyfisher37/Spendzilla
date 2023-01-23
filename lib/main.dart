@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import './widgets/transaction_list.dart';
 import './widgets/new_transaction.dart';
+import './widgets/edit_transaction.dart';
 import './model/transaction.dart';
 import './widgets/chart.dart';
 
@@ -94,7 +95,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   void _editTransaction(UniqueKey id) {
     setState(() {
-      //_userTransactions.removeWhere((tx) => tx.id == id);
+      Transaction tx_temp = _userTransactions.firstWhere((tx) => tx.id == id);
+      _userTransactions.removeWhere((tx) => tx.id == id);
+      _userTransactions.add(tx_temp);
     });
   }
 
@@ -157,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               mediaQuery.padding.top) *
           0.7,
       child: TransactionList(
-          _userTransactions, _deleteTransaction, _editTransaction),
+          _userTransactions, _deleteTransaction), // _editTransaction),
     );
 
     return Scaffold(
