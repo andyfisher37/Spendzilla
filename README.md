@@ -1,6 +1,6 @@
 # spendzilla
 
-A new Flutter project.
+Demo Flutter project for spending count
 
 ## Getting Started
 
